@@ -150,6 +150,5 @@ composer install
 Install dependencies as mentioned above (which will resolve [PHPUnit](http://packagist.org/packages/phpunit/phpunit)), then you can run the test suite:
 
 ```bash
-./vendor/bin/phpunit
+composer test
 ```
- 
