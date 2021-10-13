@@ -37,5 +37,4 @@ class Apps extends Endpoint
 
         return $api_response->json['identity'];
     }
-
 }

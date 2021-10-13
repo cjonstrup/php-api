@@ -22,9 +22,9 @@ class ApiException extends \Exception
         $http_headers = null
     ) {
         parent::__construct($message);
-        $this->http_status  = $http_status;
-        $this->http_body    = $http_body;
-        $this->json_body    = $json_body;
+        $this->http_status = $http_status;
+        $this->http_body = $http_body;
+        $this->json_body = $json_body;
         $this->http_headers = $http_headers;
     }
 

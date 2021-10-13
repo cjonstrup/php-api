@@ -2,8 +2,8 @@
 
 namespace Paylike\Tests;
 
-use Paylike\Exception\NotFound;
 use Paylike\Endpoint\Cards;
+use Paylike\Exception\NotFound;
 
 class CardsTest extends BaseTest
 {
@@ -18,15 +18,14 @@ class CardsTest extends BaseTest
         $this->cards = $this->paylike->cards();
     }
 
-
     public function testCreate()
     {
         $transaction_id = $this->transaction_id;
-        $merchant_id    = $this->merchant_id;
+        $merchant_id = $this->merchant_id;
 
-        $card_id = $this->cards->create($merchant_id, array(
-            'transactionId' => $transaction_id
-        ));
+        $card_id = $this->cards->create($merchant_id, [
+            'transactionId' => $transaction_id,
+        ]);
 
         $this->assertNotEmpty($card_id, 'primary key');
     }
@@ -34,11 +33,11 @@ class CardsTest extends BaseTest
     public function testFetch()
     {
         $transaction_id = $this->transaction_id;
-        $merchant_id    = $this->merchant_id;
+        $merchant_id = $this->merchant_id;
 
-        $card_id = $this->cards->create($merchant_id, array(
-            'transactionId' => $transaction_id
-        ));
+        $card_id = $this->cards->create($merchant_id, [
+            'transactionId' => $transaction_id,
+        ]);
 
         $card = $this->cards->fetch($card_id);
 

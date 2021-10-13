@@ -15,5 +15,5 @@ interface HttpClientInterface
      * @return \Paylike\Response\ApiResponse
      * @throws \Paylike\Exception\ApiException
      */
-    public function request($http_verb, $method, $args = array());
+    public function request($http_verb, $method, $args = []);
 }

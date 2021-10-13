@@ -25,15 +25,15 @@ class CurlClient implements HttpClientInterface
 
     public $verify_ssl = true;
 
-    function __construct($api_key, $base_url)
+    public function __construct($api_key, $base_url)
     {
-        if ( ! function_exists('curl_init')
+        if (! function_exists('curl_init')
             || ! function_exists('curl_setopt')
         ) {
             throw new ApiException("cURL support is required, but can't be found.");
         }
 
-        $this->api_key  = $api_key;
+        $this->api_key = $api_key;
         $this->base_url = $base_url;
     }
 
@@ -51,16 +51,16 @@ class CurlClient implements HttpClientInterface
     public function request(
         $http_verb,
         $method,
-        $args = array()
+        $args = []
     ) {
-
         $timeout = self::TIMEOUT;
-        $url     = $this->base_url . '/' . $method;
-        $ch      = curl_init();
+        $url = $this->base_url . '/' . $method;
+        $ch = curl_init();
 
         // Create a callback to capture HTTP headers for the response
-        $response_headers = array();
-        $headerCallback   = function ($ch, $header_line) use (&$response_headers
+        $response_headers = [];
+        $headerCallback = function ($ch, $header_line) use (
+            &$response_headers
         ) {
             // Ignore the HTTP request line (HTTP/1.1 200 OK)
             if (strpos($header_line, ":") === false) {
@@ -72,11 +72,11 @@ class CurlClient implements HttpClientInterface
             return strlen($header_line);
         };
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Accept: application/vnd.api+json',
-            'Content-Type: application/vnd.api+json'
-        ));
-        curl_setopt($ch, CURLOPT_USERAGENT, 'PHP 1.0.0 (php' . phpversion() .')');
+            'Content-Type: application/vnd.api+json',
+        ]);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'PHP 1.0.0 (php' . phpversion() . ')');
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->verify_ssl);
         curl_setopt($ch, CURLOPT_USERPWD, ":" . $this->api_key);
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
@@ -84,36 +84,44 @@ class CurlClient implements HttpClientInterface
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $http_verb = strtoupper($http_verb);
+
         switch ($http_verb) {
             case 'POST':
                 curl_setopt($ch, CURLOPT_POST, true);
                 $encoded = json_encode($args);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $encoded);
+
                 break;
             case 'GET':
                 $query = http_build_query($args, '', '&');
+
                 if ($query) {
                     curl_setopt($ch, CURLOPT_URL, $url . '?' . $query);
                 }
+
                 break;
             case 'DELETE':
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+
                 break;
             case 'PATCH':
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
                 $encoded = json_encode($args);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $encoded);
+
                 break;
             case 'PUT':
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
                 $encoded = json_encode($args);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $encoded);
+
                 break;
         }
 
         $response_body = curl_exec($ch);
+
         if ($response_body === false) {
-            $errno   = curl_errno($ch);
+            $errno = curl_errno($ch);
             $message = curl_error($ch);
             curl_close($ch);
             $this->handleCurlError($url, $errno, $message);
@@ -123,10 +131,17 @@ class CurlClient implements HttpClientInterface
         curl_close($ch);
 
         //
-        $json         = $this->parseResponse($response_body, $response_code,
-            $response_headers);
-        $api_response = new ApiResponse($response_body, $response_code,
-            $response_headers, $json);
+        $json = $this->parseResponse(
+            $response_body,
+            $response_code,
+            $response_headers
+        );
+        $api_response = new ApiResponse(
+            $response_body,
+            $response_code,
+            $response_headers,
+            $json
+        );
 
         return $api_response;
     }
@@ -145,25 +160,34 @@ class CurlClient implements HttpClientInterface
         $response_headers
     ) {
         $resp = null;
+
         if ($response_body) {
-            $resp      = json_decode($response_body, true);
+            $resp = json_decode($response_body, true);
             $jsonError = json_last_error();
+
             if ($resp === null && $jsonError !== JSON_ERROR_NONE) {
                 $msg = "Invalid response body: $response_body "
                     . "(HTTP response code: $response_code, json_last_error: $jsonError)";
-                throw new ApiException($msg, $response_code,
-                    $response_body);
+
+                throw new ApiException(
+                    $msg,
+                    $response_code,
+                    $response_body
+                );
             }
         }
 
         if ($response_code < 200 || $response_code >= 300) {
-            $this->handleApiError($response_body, $response_code,
-                $response_headers, $resp);
+            $this->handleApiError(
+                $response_body,
+                $response_code,
+                $response_headers,
+                $resp
+            );
         }
 
         return $resp;
     }
-
 
     /**
      * @param $url
@@ -179,21 +203,23 @@ class CurlClient implements HttpClientInterface
             case CURLE_SSL_PEER_CERTIFICATE:
                 $msg
                     = "Could not verify Paylike's SSL certificate."; // highly unlikely
+
                 break;
             case CURLE_COULDNT_CONNECT:
             case CURLE_COULDNT_RESOLVE_HOST:
             case CURLE_OPERATION_TIMEOUTED:
                 $msg
                     = "Could not connect to Paylike ($url).  Please check your internet connection and try again.";
+
                 break;
             default:
                 $msg = "Unexpected error communicating with Paylike.";
         }
 
         $msg .= "\n\n(Network error [errno $errno]: $message)";
+
         throw new ApiConnection($msg);
     }
-
 
     /**
      * @param $response_body
@@ -213,7 +239,6 @@ class CurlClient implements HttpClientInterface
         $response_headers,
         $json_resp
     ) {
-
         switch ($response_code) {
             case 400:
                 // format for the errors:
@@ -224,39 +249,58 @@ class CurlClient implements HttpClientInterface
                 if ($json_resp && is_array($json_resp) && ! empty($json_resp)) {
                     if (isset($json_resp[0]['message'])) {
                         $message = $json_resp[0]['message'];
-                    } else if (isset($json_resp[0]['text'])) {
+                    } elseif (isset($json_resp[0]['text'])) {
                         $message = $json_resp[0]['text'];
                     }
                 }
-                throw new InvalidRequest($message,
-                    $response_code, $response_body, $json_resp,
-                    $response_headers);
-            case 401:
-                throw new Unauthorized("You need to provide credentials (an app's API key).",
-                    $response_code,
-                    $response_body, $json_resp,
-                    $response_headers);
-            case 403:
-                throw new Forbidden("You are correctly authenticated but do not have access.",
-                    $response_code, $response_body,
-                    $json_resp,
-                    $response_headers);
-            case 404:
-                throw new NotFound("Endpoint not found.",
-                    $response_code, $response_body,
-                    $json_resp,
-                    $response_headers);
-            case 409:
-                throw new Conflict("Everything you submitted was fine at the time of validation, but something changed in the meantime and came into conflict with this (e.g. double-capture).",
-                    $response_code, $response_body,
-                    $json_resp,
-                    $response_headers);
-            default:
-                throw new ApiException("Unknown api error",
+
+                throw new InvalidRequest(
+                    $message,
                     $response_code,
                     $response_body,
                     $json_resp,
-                    $response_headers);
+                    $response_headers
+                );
+            case 401:
+                throw new Unauthorized(
+                    "You need to provide credentials (an app's API key).",
+                    $response_code,
+                    $response_body,
+                    $json_resp,
+                    $response_headers
+                );
+            case 403:
+                throw new Forbidden(
+                    "You are correctly authenticated but do not have access.",
+                    $response_code,
+                    $response_body,
+                    $json_resp,
+                    $response_headers
+                );
+            case 404:
+                throw new NotFound(
+                    "Endpoint not found.",
+                    $response_code,
+                    $response_body,
+                    $json_resp,
+                    $response_headers
+                );
+            case 409:
+                throw new Conflict(
+                    "Everything you submitted was fine at the time of validation, but something changed in the meantime and came into conflict with this (e.g. double-capture).",
+                    $response_code,
+                    $response_body,
+                    $json_resp,
+                    $response_headers
+                );
+            default:
+                throw new ApiException(
+                    "Unknown api error",
+                    $response_code,
+                    $response_body,
+                    $json_resp,
+                    $response_headers
+                );
         }
     }
 }

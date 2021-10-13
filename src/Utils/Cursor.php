@@ -2,7 +2,6 @@
 
 namespace Paylike\Utils;
 
-
 use Paylike\Paylike;
 
 /**
@@ -23,9 +22,9 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
 
     private $total_count = 0;
 
-    private $collection = array();
+    private $collection = [];
 
-    private $params = array();
+    private $params = [];
 
     /**
      * @var Paylike
@@ -48,7 +47,6 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
         $this->total_count = count($this->collection);
         $this->params = $this->setParams($params);
     }
-
 
     /**
      * Rewind the Iterator to the first element
@@ -88,7 +86,8 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
     public function next()
     {
         ++$this->current_index;
-        if (!$this->valid() && $this->couldHaveMoreItems()) {
+
+        if (! $this->valid() && $this->couldHaveMoreItems()) {
             $this->fetchNext();
         }
     }
@@ -96,7 +95,7 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
     /**
      * Checks if current position is valid
      * @link http://php.net/manual/en/iterator.valid.php
-     * @return boolean The return value will be casted to boolean and then evaluated.
+     * @return bool The return value will be casted to boolean and then evaluated.
      * Returns true on success or false on failure.
      */
     public function valid()
@@ -105,7 +104,7 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function count()
     {
@@ -118,7 +117,7 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
      * @param mixed $offset <p>
      * An offset to check for.
      * </p>
-     * @return boolean true on success or false on failure.
+     * @return bool true on success or false on failure.
      * </p>
      * <p>
      * The return value will be casted to boolean if non-boolean was returned.
@@ -126,11 +125,14 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
     public function offsetExists($offset)
     {
         $exists = isset($this->collection[$offset]);
+
         if ($exists) {
             return $exists;
         }
+
         if ($this->couldHaveMoreItems()) {
             $this->fetchNext();
+
             return $this->offsetExists($offset);
         } else {
             return $exists;
@@ -148,11 +150,14 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
     public function offsetGet($offset)
     {
         $value = isset($this->collection[$offset]) ? $this->collection[$offset] : null;
+
         if ($value) {
             return $value;
         }
+
         if ($this->couldHaveMoreItems()) {
             $this->fetchNext();
+
             return $this->offsetGet($offset);
         } else {
             return $value;
@@ -198,8 +203,8 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
     private function fetchNext()
     {
         $this->updateOffset()->fetch();
-        return $this;
 
+        return $this;
     }
 
     /**
@@ -209,10 +214,12 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
     {
         $api_response = $this->paylike->client->request('GET', $this->endpoint, $this->params);
         $data = $api_response->json;
+
         if (count($data)) {
             $this->collection = array_merge($this->collection, $data);
             $this->total_count += count($data);
         }
+
         return $this;
     }
 
@@ -226,6 +233,7 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
         } else {
             $this->params['before'] = $this->collection[$this->total_count - 1]['id'];
         }
+
         return $this;
     }
 
@@ -260,16 +268,17 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
      */
     private function setParams($params)
     {
-        $return = array(
-            'after' => null,
+        $return = [
+            'after'  => null,
             'before' => null,
-            'limit' => 10,
-            'filter' => array()
-        );
+            'limit'  => 10,
+            'filter' => [],
+        ];
 
         if (isset($params['limit'])) {
             $limit = $params['limit'];
-            if (!is_numeric($limit) || $limit <= 0) {
+
+            if (! is_numeric($limit) || $limit <= 0) {
                 throw new \Exception('Limit is not valid. It has to be a numerical value (> 0)');
             }
             $return['limit'] = $limit;
@@ -277,7 +286,8 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
 
         if (isset($params['after'])) {
             $after = $params['after'];
-            if (!is_string($after)) {
+
+            if (! is_string($after)) {
                 throw new \Exception('After is not valid. It has to be a string');
             }
             $return['after'] = $after;
@@ -285,7 +295,8 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
 
         if (isset($params['before'])) {
             $before = $params['before'];
-            if (!is_string($before)) {
+
+            if (! is_string($before)) {
                 throw new \Exception('Before is not valid. It has to be a string');
             }
             $return['before'] = $before;
@@ -293,22 +304,26 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
 
         if (isset($params['filter'])) {
             $filter = $params['filter'];
-            if (!is_array($filter)) {
+
+            if (! is_array($filter)) {
                 throw new \Exception('Filter is not valid. It has to be an array');
             }
+
             if (isset($filter['merchantId'])) {
-                if (!is_string($filter['merchantId'])) {
+                if (! is_string($filter['merchantId'])) {
                     throw new \Exception('Merchant filter is not valid. It has to be an string');
                 }
                 $return['filter']['merchantId'] = $filter['merchantId'];
             }
+
             if (isset($filter['transactionId'])) {
-                if (!is_string($filter['transactionId'])) {
+                if (! is_string($filter['transactionId'])) {
                     throw new \Exception('Transaction filter is not valid. It has to be an string');
                 }
                 $return['filter']['transactionId'] = $filter['transactionId'];
             }
         }
+
         return $return;
     }
 
@@ -316,5 +331,4 @@ class Cursor implements \Iterator, \Countable, \ArrayAccess
     {
         return ($this->count() % $this->limit() == 0);
     }
-
 }

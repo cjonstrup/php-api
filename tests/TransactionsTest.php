@@ -2,9 +2,9 @@
 
 namespace Paylike\Tests;
 
+use Paylike\Endpoint\Transactions;
 use Paylike\Exception\InvalidRequest;
 use Paylike\Exception\NotFound;
-use Paylike\Endpoint\Transactions;
 
 class TransactionsTest extends BaseTest
 {
@@ -30,14 +30,14 @@ class TransactionsTest extends BaseTest
         $merchant_id = $this->merchant_id;
         $transaction_id = $this->transaction_id;
 
-        $new_transaction_id = $this->transactions->create($merchant_id, array(
+        $new_transaction_id = $this->transactions->create($merchant_id, [
             'transactionId' => $transaction_id,
-            'currency' => 'EUR',
-            'amount' => 200,
-            'custom' => array(
-                'source' => 'php client test'
-            )
-        ));
+            'currency'      => 'EUR',
+            'amount'        => 200,
+            'custom'        => [
+                'source' => 'php client test',
+            ],
+        ]);
 
         $this->assertNotEmpty($new_transaction_id, 'primary key');
     }
@@ -70,15 +70,21 @@ class TransactionsTest extends BaseTest
     {
         $new_transaction_id = $this->createNewTransactionForTest();
 
-        $transaction = $this->transactions->capture($new_transaction_id, array(
+        $transaction = $this->transactions->capture($new_transaction_id, [
             'currency' => 'EUR',
-            'amount' => 100
-        ));
+            'amount'   => 100,
+        ]);
 
-        $this->assertEquals($transaction['capturedAmount'], 100,
-            'captured amount');
-        $this->assertEquals($transaction['pendingAmount'], 200,
-            'pending amount');
+        $this->assertEquals(
+            $transaction['capturedAmount'],
+            100,
+            'captured amount'
+        );
+        $this->assertEquals(
+            $transaction['pendingAmount'],
+            200,
+            'pending amount'
+        );
 
         $trail = $transaction['trail'];
         $this->assertCount(1, $trail, 'length of trail');
@@ -94,10 +100,10 @@ class TransactionsTest extends BaseTest
         $this->expectException(InvalidRequest::class);
 
         $new_transaction_id = $this->createNewTransactionForTest();
-        $this->transactions->capture($new_transaction_id, array(
+        $this->transactions->capture($new_transaction_id, [
             'currency' => 'EUR',
-            'amount' => 400
-        ));
+            'amount'   => 400,
+        ]);
     }
 
     /**
@@ -107,16 +113,16 @@ class TransactionsTest extends BaseTest
     {
         $new_transaction_id = $this->createNewTransactionForTest();
 
-        $this->transactions->capture($new_transaction_id, array(
+        $this->transactions->capture($new_transaction_id, [
             'currency' => 'EUR',
-            'amount' => 200
-        ));
+            'amount'   => 200,
+        ]);
 
-        $transaction = $this->transactions->refund($new_transaction_id, array(
-            'amount' => 120
-        ));
+        $transaction = $this->transactions->refund($new_transaction_id, [
+            'amount' => 120,
+        ]);
 
-        $this->assertEquals(200, $transaction['capturedAmount'],'captured amount');
+        $this->assertEquals(200, $transaction['capturedAmount'], 'captured amount');
         $this->assertEquals(100, $transaction['pendingAmount'], 'pending amount');
         $this->assertEquals(120, $transaction['refundedAmount'], 'refunded amount');
 
@@ -135,13 +141,16 @@ class TransactionsTest extends BaseTest
     {
         $new_transaction_id = $this->createNewTransactionForTest();
 
-        $transaction = $this->transactions->void($new_transaction_id, array(
-            'amount' => 200
-        ));
+        $transaction = $this->transactions->void($new_transaction_id, [
+            'amount' => 200,
+        ]);
 
         $this->assertEquals($transaction['voidedAmount'], 200, 'voided amount');
-        $this->assertEquals($transaction['pendingAmount'], 100,
-            'pending amount');
+        $this->assertEquals(
+            $transaction['pendingAmount'],
+            100,
+            'pending amount'
+        );
 
         $trail = $transaction['trail'];
         $this->assertCount(1, $trail, 'length of trail');
@@ -157,14 +166,14 @@ class TransactionsTest extends BaseTest
         $merchant_id = $this->merchant_id;
         $transaction_id = $this->transaction_id;
 
-        $new_transaction_id = $this->transactions->create($merchant_id, array(
+        $new_transaction_id = $this->transactions->create($merchant_id, [
             'transactionId' => $transaction_id,
-            'currency' => 'EUR',
-            'amount' => 300,
-            'custom' => array(
-                'source' => 'php client test'
-            )
-        ));
+            'currency'      => 'EUR',
+            'amount'        => 300,
+            'custom'        => [
+                'source' => 'php client test',
+            ],
+        ]);
 
         return $new_transaction_id;
     }
@@ -176,7 +185,8 @@ class TransactionsTest extends BaseTest
     {
         $merchant_id = $this->merchant_id;
         $api_transactions = $this->transactions->find($merchant_id);
-        $ids = array();
+        $ids = [];
+
         foreach ($api_transactions as $transaction) {
             // the transaction array grows as needed
             $ids[] = $transaction['id'];
@@ -184,7 +194,6 @@ class TransactionsTest extends BaseTest
 
         $this->assertGreaterThan(0, count($ids), 'number of transactions');
     }
-
 
     /**
      * @throws \Exception
@@ -195,12 +204,13 @@ class TransactionsTest extends BaseTest
         $limit = 10;
         $after = '5b8e839d7cc76f04ecd3f733';
         $before = '5b98deef882cf804f6108700';
-        $api_transactions = $this->transactions->find($merchant_id, array(
-            'limit' => $limit,
-            'after' => $after,
-            'before' => $before
-        ));
-        $ids = array();
+        $api_transactions = $this->transactions->find($merchant_id, [
+            'limit'  => $limit,
+            'after'  => $after,
+            'before' => $before,
+        ]);
+        $ids = [];
+
         foreach ($api_transactions as $transaction) {
             // the transaction array grows as needed
             $ids[] = $transaction['id'];
@@ -217,7 +227,8 @@ class TransactionsTest extends BaseTest
         $merchant_id = $this->merchant_id;
         $before = '5b98deef882cf804f6108700';
         $api_transactions = $this->transactions->before($merchant_id, $before);
-        $ids = array();
+        $ids = [];
+
         foreach ($api_transactions as $transaction) {
             // the transaction array grows as needed
             $ids[] = $transaction['id'];
@@ -234,7 +245,8 @@ class TransactionsTest extends BaseTest
         $merchant_id = $this->merchant_id;
         $after = '5b8e839d7cc76f04ecd3f733';
         $api_transactions = $this->transactions->before($merchant_id, $after);
-        $ids = array();
+        $ids = [];
+
         foreach ($api_transactions as $transaction) {
             // the transaction array grows as needed
             $ids[] = $transaction['id'];
@@ -249,12 +261,13 @@ class TransactionsTest extends BaseTest
     public function testGetAllTransactionsFilter()
     {
         $merchant_id = $this->merchant_id;
-        $api_transactions = $this->transactions->find($merchant_id, array(
-            'filter' => array(
-                'test' => true
-            ),
-        ));
-        $ids = array();
+        $api_transactions = $this->transactions->find($merchant_id, [
+            'filter' => [
+                'test' => true,
+            ],
+        ]);
+        $ids = [];
+
         foreach ($api_transactions as $transaction) {
             // the transaction array grows as needed
             $ids[] = $transaction['id'];

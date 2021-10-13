@@ -9,5 +9,4 @@ namespace Paylike\Exception;
  */
 class NotFound extends ApiException
 {
-
 }

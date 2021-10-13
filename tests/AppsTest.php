@@ -17,12 +17,11 @@ class AppsTest extends BaseTest
         $this->apps = $this->paylike->apps();
     }
 
-
     public function testCreate()
     {
-        $app_identity = $this->apps->create(array(
-            'name' => 'Test App Name'
-        ));
+        $app_identity = $this->apps->create([
+            'name' => 'Test App Name',
+        ]);
 
         $this->assertNotEmpty($app_identity, 'app identity');
     }

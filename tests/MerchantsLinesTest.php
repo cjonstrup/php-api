@@ -3,7 +3,6 @@
 namespace Paylike\Tests;
 
 use Paylike\Endpoint\Merchant\Lines;
-use Paylike\Paylike;
 
 class MerchantsLinesTest extends BaseTest
 {
@@ -21,7 +20,6 @@ class MerchantsLinesTest extends BaseTest
         $this->lines = $this->paylike->merchants()->lines();
     }
 
-
     /**
      * @throws \Exception
      */
@@ -29,7 +27,8 @@ class MerchantsLinesTest extends BaseTest
     {
         $merchant_id = $this->merchant_id;
         $api_lines = $this->lines->find($merchant_id);
-        $ids = array();
+        $ids = [];
+
         foreach ($api_lines as $line) {
             // the lines array grows as needed
             $ids[] = $line['id'];
@@ -46,7 +45,8 @@ class MerchantsLinesTest extends BaseTest
         $merchant_id = $this->merchant_id;
         $before = '5da8594efd0c53603c7bb3a5';
         $api_lines = $this->lines->before($merchant_id, $before);
-        $ids = array();
+        $ids = [];
+
         foreach ($api_lines as $line) {
             // the lines array grows as needed
             $ids[] = $line['id'];
@@ -63,7 +63,8 @@ class MerchantsLinesTest extends BaseTest
         $merchant_id = $this->merchant_id;
         $after = '5da8594efd0c53603c7bb3a5';
         $api_lines = $this->lines->after($merchant_id, $after);
-        $ids = array();
+        $ids = [];
+
         foreach ($api_lines as $line) {
             // the lines array grows as needed
             $ids[] = $line['id'];
@@ -71,5 +72,4 @@ class MerchantsLinesTest extends BaseTest
 
         $this->assertGreaterThan(0, count($api_lines), 'number of lines');
     }
-    
 }

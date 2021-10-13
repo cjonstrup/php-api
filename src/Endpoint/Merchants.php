@@ -66,14 +66,16 @@ class Merchants extends Endpoint
      * @return Cursor
      * @throws \Exception
      */
-    public function find($app_id, $args = array())
+    public function find($app_id, $args = [])
     {
         $url = 'identities/' . $app_id . '/merchants';
-        if (!isset($args['limit'])) {
+
+        if (! isset($args['limit'])) {
             $args['limit'] = 10;
         }
         $api_response = $this->paylike->client->request('GET', $url, $args);
         $merchants = $api_response->json;
+
         return new Cursor($url, $args, $merchants, $this->paylike);
     }
 
@@ -87,7 +89,7 @@ class Merchants extends Endpoint
      */
     public function before($app_id, $merchant_id)
     {
-        return $this->find($app_id, array('before' => $merchant_id));
+        return $this->find($app_id, ['before' => $merchant_id]);
     }
 
     /**
@@ -100,7 +102,7 @@ class Merchants extends Endpoint
      */
     public function after($app_id, $merchant_id)
     {
-        return $this->find($app_id, array('after' => $merchant_id));
+        return $this->find($app_id, ['after' => $merchant_id]);
     }
 
     /**

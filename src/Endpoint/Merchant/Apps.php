@@ -21,14 +21,16 @@ class Apps extends Endpoint
      * @return Cursor
      * @throws \Exception
      */
-    public function find($merchant_id, $args = array())
+    public function find($merchant_id, $args = [])
     {
         $url = 'merchants/' . $merchant_id . '/apps';
-        if (!isset($args['limit'])) {
+
+        if (! isset($args['limit'])) {
             $args['limit'] = 10;
         }
         $api_response = $this->paylike->client->request('GET', $url, $args);
         $apps = $api_response->json;
+
         return new Cursor($url, $args, $apps, $this->paylike);
     }
 
@@ -43,9 +45,9 @@ class Apps extends Endpoint
     {
         $url = 'merchants/' . $merchant_id . '/apps';
 
-        $args = array(
-            'appId' => $app_id
-        );
+        $args = [
+            'appId' => $app_id,
+        ];
 
         $api_response = $this->paylike->client->request('POST', $url, $args);
 
@@ -61,12 +63,10 @@ class Apps extends Endpoint
      */
     public function revoke($merchant_id, $app_id)
     {
-        $url = 'merchants/' . $merchant_id . '/apps/'.$app_id;
-
+        $url = 'merchants/' . $merchant_id . '/apps/' . $app_id;
 
         $api_response = $this->paylike->client->request('DELETE', $url);
 
         return $api_response;
     }
-
 }

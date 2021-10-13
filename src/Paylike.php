@@ -2,12 +2,12 @@
 
 namespace Paylike;
 
-use Paylike\HttpClient\HttpClientInterface;
-use Paylike\HttpClient\CurlClient;
 use Paylike\Endpoint\Apps;
+use Paylike\Endpoint\Cards;
 use Paylike\Endpoint\Merchants;
 use Paylike\Endpoint\Transactions;
-use Paylike\Endpoint\Cards;
+use Paylike\HttpClient\CurlClient;
+use Paylike\HttpClient\HttpClientInterface;
 
 /**
  * Class Paylike
@@ -33,7 +33,6 @@ class Paylike
 
     private $version = '1.0.8';
 
-
     /**
      * Paylike constructor.
      *
@@ -44,7 +43,7 @@ class Paylike
     public function __construct($api_key, HttpClientInterface $client = null)
     {
         $this->api_key = $api_key;
-        $this->client  = $client ? $client
+        $this->client = $client ? $client
             : new CurlClient($this->api_key, self::BASE_URL);
     }
 
@@ -55,7 +54,6 @@ class Paylike
     {
         return $this->api_key;
     }
-
 
     /**
      * @return Apps
@@ -92,7 +90,8 @@ class Paylike
     /**
      * @return string
      */
-    public function getVersion(){
+    public function getVersion()
+    {
         return $this->version;
     }
 }

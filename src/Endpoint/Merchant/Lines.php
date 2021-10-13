@@ -20,14 +20,16 @@ class Lines extends Endpoint
      * @return Cursor
      * @throws \Exception
      */
-    public function find($merchant_id, $args = array())
+    public function find($merchant_id, $args = [])
     {
         $url = 'merchants/' . $merchant_id . '/lines';
-        if (!isset($args['limit'])) {
+
+        if (! isset($args['limit'])) {
             $args['limit'] = 10;
         }
         $api_response = $this->paylike->client->request('GET', $url, $args);
         $lines = $api_response->json;
+
         return new Cursor($url, $args, $lines, $this->paylike);
     }
 
@@ -41,7 +43,7 @@ class Lines extends Endpoint
      */
     public function before($merchant_id, $line_id)
     {
-        return $this->find($merchant_id, array('before' => $line_id));
+        return $this->find($merchant_id, ['before' => $line_id]);
     }
 
     /**
@@ -54,6 +56,6 @@ class Lines extends Endpoint
      */
     public function after($merchant_id, $line_id)
     {
-        return $this->find($merchant_id, array('after' => $line_id));
+        return $this->find($merchant_id, ['after' => $line_id]);
     }
 }

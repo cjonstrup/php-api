@@ -22,15 +22,15 @@ class ApiResponse
      * @param $headers
      * @param $json
      */
-    function __construct(
+    public function __construct(
         $body,
         $code,
         $headers,
         $json
     ) {
-        $this->body    = $body;
-        $this->code    = $code;
+        $this->body = $body;
+        $this->code = $code;
         $this->headers = $headers;
-        $this->json    = $json;
+        $this->json = $json;
     }
 }

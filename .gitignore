@@ -76,4 +76,6 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 .env
+
+# PHP CS Fixer
 .php-cs-fixer.cache

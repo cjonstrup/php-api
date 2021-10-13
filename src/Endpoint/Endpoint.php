@@ -19,7 +19,7 @@ abstract class Endpoint
      *
      * @param $paylike
      */
-    function __construct($paylike)
+    public function __construct($paylike)
     {
         $this->paylike = $paylike;
     }

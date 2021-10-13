@@ -3,7 +3,6 @@
 namespace Paylike\Tests;
 
 use Paylike\Endpoint\Merchant\Apps;
-use Paylike\Paylike;
 
 class MerchantsAppsTest extends BaseTest
 {
@@ -21,7 +20,6 @@ class MerchantsAppsTest extends BaseTest
         $this->apps = $this->paylike->merchants()->apps();
     }
 
-
     /**
      * @throws \Exception
      */
@@ -29,7 +27,8 @@ class MerchantsAppsTest extends BaseTest
     {
         $merchant_id = $this->merchant_id;
         $apps = $this->apps->find($merchant_id);
-        $ids = array();
+        $ids = [];
+
         foreach ($apps as $app) {
             // the apps array grows as needed
             $ids[] = $app['id'];
@@ -55,5 +54,4 @@ class MerchantsAppsTest extends BaseTest
 
         $this->assertEquals(204, $response->code);
     }
-
 }

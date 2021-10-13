@@ -20,10 +20,9 @@ abstract class BaseTest extends TestCase
     {
         parent::setUp();
 
-        $this->paylike        = new Paylike("dbcf01af-8667-4967-9791-56101ca87ac8");
-        $this->app_id         = "594d3cde5be12d547cbe2ec2";
+        $this->paylike = new Paylike("dbcf01af-8667-4967-9791-56101ca87ac8");
+        $this->app_id = "594d3cde5be12d547cbe2ec2";
         $this->transaction_id = "5da8272132aad22568a511b7";
-        $this->merchant_id    = "594d3c455be12d547cbe2ebe";
+        $this->merchant_id = "594d3c455be12d547cbe2ebe";
     }
-
 }
