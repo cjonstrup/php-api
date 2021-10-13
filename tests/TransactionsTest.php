@@ -16,7 +16,7 @@ class TransactionsTest extends BaseTest
     /**
      *
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->transactions = $this->paylike->transactions();
@@ -40,7 +40,6 @@ class TransactionsTest extends BaseTest
         ));
 
         $this->assertNotEmpty($new_transaction_id, 'primary key');
-        $this->assertInternalType('string', $new_transaction_id, 'primary key type');
     }
 
     /**
@@ -60,7 +59,7 @@ class TransactionsTest extends BaseTest
      */
     public function testFailFetch()
     {
-        $this->setExpectedException(NotFound::class);
+        $this->expectException(NotFound::class);
         $this->transactions->fetch('wrong id');
     }
 
@@ -83,8 +82,8 @@ class TransactionsTest extends BaseTest
 
         $trail = $transaction['trail'];
         $this->assertCount(1, $trail, 'length of trail');
-        $this->assertEquals($trail[0]['capture'], true, 'type of trail');
-        $this->assertEquals($trail[0]['amount'], 100, 'amount in capture trail');
+        $this->assertEquals(true, $trail[0]['capture'], 'type of trail');
+        $this->assertEquals(100, $trail[0]['amount'], 'amount in capture trail');
     }
 
     /**
@@ -92,7 +91,7 @@ class TransactionsTest extends BaseTest
      */
     public function testCaptureBiggerAmount()
     {
-        $this->setExpectedException(InvalidRequest::class);
+        $this->expectException(InvalidRequest::class);
 
         $new_transaction_id = $this->createNewTransactionForTest();
         $this->transactions->capture($new_transaction_id, array(
@@ -117,19 +116,16 @@ class TransactionsTest extends BaseTest
             'amount' => 120
         ));
 
-        $this->assertEquals($transaction['capturedAmount'], 200,
-            'captured amount');
-        $this->assertEquals($transaction['pendingAmount'], 100,
-            'pending amount');
-        $this->assertEquals($transaction['refundedAmount'], 120,
-            'refunded amount');
+        $this->assertEquals(200, $transaction['capturedAmount'],'captured amount');
+        $this->assertEquals(100, $transaction['pendingAmount'], 'pending amount');
+        $this->assertEquals(120, $transaction['refundedAmount'], 'refunded amount');
 
         $trail = $transaction['trail'];
         $this->assertCount(2, $trail, 'length of trail');
-        $this->assertEquals($trail[0]['capture'], true, 'type of trail');
-        $this->assertEquals($trail[0]['amount'], 200, 'amount in capture trail');
-        $this->assertEquals($trail[1]['refund'], true, 'type of trail');
-        $this->assertEquals($trail[1]['amount'], 120, 'amount in refund trail');
+        $this->assertEquals(true, $trail[0]['capture'], 'type of trail');
+        $this->assertEquals(200, $trail[0]['amount'], 'amount in capture trail');
+        $this->assertEquals(true, $trail[1]['refund'], 'type of trail');
+        $this->assertEquals(120, $trail[1]['amount'], 'amount in refund trail');
     }
 
     /**

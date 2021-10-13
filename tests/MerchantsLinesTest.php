@@ -15,7 +15,7 @@ class MerchantsLinesTest extends BaseTest
     /**
      *
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->lines = $this->paylike->merchants()->lines();

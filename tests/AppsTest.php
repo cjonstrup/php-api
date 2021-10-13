@@ -11,7 +11,7 @@ class AppsTest extends BaseTest
      */
     protected $apps;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->apps = $this->paylike->apps();
