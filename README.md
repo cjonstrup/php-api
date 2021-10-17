@@ -1,5 +1,6 @@
 # Paylike client (PHP)
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/paylike/php-api.svg?style=flat-square)](https://packagist.org/packages/paylike/php-api)
 [![Total Downloads](https://poser.pugx.org/paylike/php-api/downloads.svg)](https://packagist.org/packages/paylike/php-api)
 [![License](https://poser.pugx.org/paylike/php-api/license.svg)](https://packagist.org/packages/paylike/php-api)
 
