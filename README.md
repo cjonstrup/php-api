@@ -1,5 +1,8 @@
 # Paylike client (PHP)
 
+[![Total Downloads](https://poser.pugx.org/paylike/php-api/downloads.svg)](https://packagist.org/packages/paylike/php-api)
+[![License](https://poser.pugx.org/paylike/php-api/license.svg)](https://packagist.org/packages/paylike/php-api)
+
 You can sign up for a Paylike account at [https://paylike.io](https://paylike.io).
 
 ## Getting an API key
